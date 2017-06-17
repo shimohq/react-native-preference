@@ -51,9 +51,11 @@ RCT_EXPORT_METHOD(sync:(RCTPromiseResolveBlock)resolve
     NSArray *keys = [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     for(NSString *key in keys) {
-        NSObject *value = [[NSUserDefaults standardUserDefaults] objectForKey:key];
-
-        result[key] = value == nil ? [NSNull null] : value;
+        NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:key];
+        
+        if (value) {
+            result[key] = value;
+        }
     }
     
     return [result copy];

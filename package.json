@@ -1,6 +1,6 @@
 {
     "name": "react-native-preference",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Manage react-native app's preference data synchronously",
     "repository": {
         "type": "git",
