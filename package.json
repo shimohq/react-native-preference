@@ -1,0 +1,19 @@
+{
+    "name": "react-native-preference",
+    "version": "0.0.1",
+    "description": "Manage react-native app's preference data synchronously",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shimohq/react-native-preference"
+    },
+    "license": "MIT",
+    "keywords": [
+        "react-component",
+        "react-native",
+        "preference",
+        "SharedPreference",
+        "UserDefaults",
+        "ios",
+        "android"
+    ]
+}
