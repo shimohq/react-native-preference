@@ -66,6 +66,14 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         promise.resolve(getPreferences());
     }
 
+    @ReactMethod
+    public void clear(String key, Promise promise) {
+        SharedPreferences.Editor editor = getEditor();
+        editor.remove(key);
+        editor.commit();
+        promise.resolve(getPreferences());
+    }
+
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
