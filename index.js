@@ -1,12 +1,16 @@
-import { NativeModules } from 'react-native';
+import { NativeModules, NativeEventEmitter } from 'react-native';
 
 const { RNPreferenceManager } = NativeModules;
 
+const preferenceManagerEmitter = new NativeEventEmitter(RNPreferenceManager);
+
 let PREFERENCES = {};
+let syncLock = false;
 
 const PREFERENCE_PREFIX_REG = /^RNPreference:/;
 
 function processPreferences(preferences:Object) {
+    syncLock = false;
     PREFERENCES = Object.keys(preferences).reduce(function(prev, key) {
         const value = preferences[key];
         if (PREFERENCE_PREFIX_REG.test(key)) {
@@ -27,6 +31,12 @@ function processPreferences(preferences:Object) {
 
 processPreferences(RNPreferenceManager.InitialPreferences);
 
+preferenceManagerEmitter.addListener('sync', function (data) {
+    if (!syncLock) {
+        processPreferences(data);
+    }
+});
+
 function get(key?: String) {
     if (key != null) {
         return PREFERENCES[key];
@@ -38,6 +48,11 @@ function get(key?: String) {
 }
 
 function set(key: String|Object, value?: String) {
+    if (syncLock) {
+        return;
+    }
+    syncLock = true;
+
     let data = {};
 
     if (typeof key === 'object') {
@@ -47,7 +62,6 @@ function set(key: String|Object, value?: String) {
     } else {
         data[key] = value;
     }
-
 
     data = Object.keys(data).reduce((prev, name) => {
         const stringified = JSON.stringify(data[name]);
@@ -61,6 +75,11 @@ function set(key: String|Object, value?: String) {
 }
 
 function clear(key?: String|Array) {
+    if (syncLock) {
+        return;
+    }
+    syncLock = true;
+
     let result;
     if (key == null) {
         PREFERENCES = {};
@@ -81,13 +100,8 @@ function clear(key?: String|Array) {
     return result.then(processPreferences);
 }
 
-function sync() {
-    return RNPreferenceManager.sync().then(processPreferences);
-}
-
 export default {
     get,
     set,
-    clear,
-    sync
+    clear
 }

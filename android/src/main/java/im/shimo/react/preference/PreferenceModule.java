@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +19,25 @@ import java.util.Map;
 
 public class PreferenceModule extends ReactContextBaseJavaModule {
 
-    private String mPackageName;
+    // Must keep a strong reference to the listener,
+    // or it will be susceptible to garbage collection.
+    private SharedPreferences.OnSharedPreferenceChangeListener mListener;
+
+    private SharedPreferences mSharedPreferences;
 
     public PreferenceModule(ReactApplicationContext context) {
         super(context);
-        mPackageName = context.getPackageName();
+
+        mSharedPreferences = getReactApplicationContext().getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+        mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                getReactApplicationContext()
+                        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit("sync", getPreferences());
+            }
+        };
+
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
     }
 
     public String getName() {
@@ -43,17 +58,11 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void clearAll(Promise promise) {
         SharedPreferences.Editor editor = getEditor();
-        Map<String, ?> allEntries = getSharedPreferences().getAll();
+        Map<String, ?> allEntries = mSharedPreferences.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             editor.remove(entry.getKey());
         }
         editor.commit();
-        promise.resolve(getPreferences());
-    }
-
-
-    @ReactMethod
-    public void sync(Promise promise) {
         promise.resolve(getPreferences());
     }
 
@@ -66,7 +75,7 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
 
     private ReadableMap getPreferences() {
         WritableMap result = Arguments.createMap();
-        Map<String, ?> allEntries = getSharedPreferences().getAll();
+        Map<String, ?> allEntries = mSharedPreferences.getAll();
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             result.putString(entry.getKey(), entry.getValue().toString());
         }
@@ -74,11 +83,13 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         return result;
     }
 
-    private SharedPreferences getSharedPreferences() {
-        return getReactApplicationContext().getSharedPreferences(mPackageName, Context.MODE_PRIVATE);
+    private SharedPreferences.Editor getEditor() {
+        return mSharedPreferences.edit();
     }
 
-    private SharedPreferences.Editor getEditor() {
-        return getSharedPreferences().edit();
+    @Override
+    public void onCatalystInstanceDestroy() {
+        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mListener);
     }
+
 }

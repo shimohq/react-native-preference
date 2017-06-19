@@ -4,7 +4,31 @@
 
 @implementation RNPreferenceManager
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(defaultsChanged:)
+                                                     name:NSUserDefaultsDidChangeNotification
+                                                   object:nil];
+    }
+    return self;
+}
+
 RCT_EXPORT_MODULE()
+
+- (void)defaultsChanged:(NSNotification *)notification {
+    [self sendEventWithName:@"sync" body:[self getPreferences]];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[@"sync"];
+}
 
 RCT_EXPORT_METHOD(set:(NSDictionary *)data
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -38,12 +62,6 @@ RCT_EXPORT_METHOD(clearAll:(RCTPromiseResolveBlock)resolve
 {
     NSArray *keys = [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys];
     [self clear:keys resolve:resolve reject:reject];
-}
-
-RCT_EXPORT_METHOD(sync:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-    resolve([self getPreferences]);
 }
 
 - (NSDictionary *)getPreferences
