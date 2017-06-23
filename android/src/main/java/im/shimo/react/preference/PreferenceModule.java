@@ -50,8 +50,10 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         ReadableMapKeySetIterator iterator = data.keySetIterator();
         while(iterator.hasNextKey()) {
             String key = iterator.nextKey();
-            editor.putString(key, data.getString(key)).commit();
+            editor.putString(key, data.getString(key));
         }
+
+        editor.commit();
         promise.resolve(getPreferences());
     }
 
