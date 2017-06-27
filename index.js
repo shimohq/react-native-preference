@@ -2,40 +2,13 @@ import { NativeModules, NativeEventEmitter } from 'react-native';
 
 const { RNPreferenceManager } = NativeModules;
 
-const preferenceManagerEmitter = new NativeEventEmitter(RNPreferenceManager);
-
 let PREFERENCES = {};
-let syncLock = false;
 
-const PREFERENCE_PREFIX_REG = /^RNPreference:/;
-
-function processPreferences(preferences:Object) {
-    syncLock = false;
-    PREFERENCES = Object.keys(preferences).reduce(function(prev, key) {
-        const value = preferences[key];
-        if (PREFERENCE_PREFIX_REG.test(key)) {
-            try {
-                prev[key.replace(PREFERENCE_PREFIX_REG, '')] = JSON.parse(value);
-            } catch (err) {
-                prev[key] = null;
-            }
-        } else {
-            prev[key] = value;
-        }
-        return prev;
-    }, {});
-
-
-    return PREFERENCES;
+try {
+    PREFERENCES = JSON.parse(RNPreferenceManager.InitialPreferences);
+} catch (err) {
+    console.warn(`preference parse exception:${err.message}`);
 }
-
-processPreferences(RNPreferenceManager.InitialPreferences);
-
-preferenceManagerEmitter.addListener('sync', function (data) {
-    if (!syncLock) {
-        processPreferences(data);
-    }
-});
 
 function get(key?: String) {
     if (key != null) {
@@ -48,11 +21,6 @@ function get(key?: String) {
 }
 
 function set(key: String|Object, value?: String) {
-    if (syncLock) {
-        return;
-    }
-    syncLock = true;
-
     let data = {};
 
     if (typeof key === 'object') {
@@ -63,41 +31,34 @@ function set(key: String|Object, value?: String) {
         data[key] = value;
     }
 
-    data = Object.keys(data).reduce((prev, name) => {
-        const stringified = JSON.stringify(data[name]);
-        prev['RNPreference:' + name] = stringified;
-        // Keep same data in the native side and js side
-        PREFERENCES[name] = JSON.parse(stringified);
-        return prev;
-    }, {});
+    Object.keys(data).forEach((name) => {
+        const stringfied = JSON.stringify(data[name]);
+        if (stringfied) {
+            PREFERENCES[name] = JSON.parse(stringfied);
+        } else {
+            delete PREFERENCES[name];
+        }
+    });
 
-    return RNPreferenceManager.set(data).then(processPreferences);
+    return RNPreferenceManager.set(JSON.stringify(PREFERENCES));
 }
 
 function clear(key?: String|Array) {
-    if (syncLock) {
-        return;
-    }
-    syncLock = true;
-
-    let result;
     if (key == null) {
         PREFERENCES = {};
-        result = RNPreferenceManager.clearAll();
+        return RNPreferenceManager.clear();
     } else {
         let keys;
         if (!Array.isArray(key)) {
             keys = [key];
         }
 
-        keys = keys.map((name) => {
-            return name.toString();
+        keys.map((name) => {
+            delete PREFERENCES[name];
         });
 
-        result = RNPreferenceManager.clear(keys);
+        return RNPreferenceManager.set(JSON.stringify(PREFERENCES));
     }
-
-    return result.then(processPreferences);
 }
 
 export default {

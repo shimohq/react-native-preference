@@ -1,82 +1,32 @@
 
 #import "RNPreferenceManager.h"
 
+NSString *const PREFERENCE_KEY = @"RNPreferenceKey";
 
 @implementation RNPreferenceManager
 
-- (instancetype)init
-{
-    if (self = [super init]) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(defaultsChanged:)
-                                                     name:NSUserDefaultsDidChangeNotification
-                                                   object:nil];
-    }
-    return self;
-}
-
 RCT_EXPORT_MODULE()
 
-- (void)defaultsChanged:(NSNotification *)notification {
-    [self sendEventWithName:@"sync" body:[self getPreferences]];
-}
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (NSArray<NSString *> *)supportedEvents
-{
-    return @[@"sync"];
-}
-
-RCT_EXPORT_METHOD(set:(NSDictionary *)data
+RCT_EXPORT_METHOD(set:(NSString *)data
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    for (id key in data) {
-        id value = [data objectForKey:key];
-        
-        if (value && ![value isKindOfClass:[NSNull class]]) {
-            [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
-        } else {
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-        }
-    }
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:PREFERENCE_KEY];
     resolve([self getPreferences]);
 }
 
-RCT_EXPORT_METHOD(clear:(NSArray *)keys
-                  resolve:(RCTPromiseResolveBlock)resolve
+RCT_EXPORT_METHOD(clear:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    for(NSString *key in keys) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:key];
-    }
-    
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:PREFERENCE_KEY];
     resolve([self getPreferences]);
 }
 
-RCT_EXPORT_METHOD(clearAll:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+- (NSString *)getPreferences
 {
-    NSArray *keys = [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys];
-    [self clear:keys resolve:resolve reject:reject];
-}
-
-- (NSDictionary *)getPreferences
-{
-    NSArray *keys = [[[NSUserDefaults standardUserDefaults] dictionaryRepresentation] allKeys];
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-    for(NSString *key in keys) {
-        NSString *value = [[NSUserDefaults standardUserDefaults] stringForKey:key];
-        
-        if (value) {
-            result[key] = value;
-        }
-    }
-    
-    return [result copy];
+    NSString *preferences = [[NSUserDefaults standardUserDefaults] stringForKey:PREFERENCE_KEY];
+    return preferences ? preferences : @"{}";
 }
 
 - (NSDictionary *)constantsToExport

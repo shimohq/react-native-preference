@@ -19,25 +19,12 @@ import java.util.Map;
 
 public class PreferenceModule extends ReactContextBaseJavaModule {
 
-    // Must keep a strong reference to the listener,
-    // or it will be susceptible to garbage collection.
-    private SharedPreferences.OnSharedPreferenceChangeListener mListener;
-
+    final private String mPreferenceKey = "data";
     private SharedPreferences mSharedPreferences;
 
     public PreferenceModule(ReactApplicationContext context) {
         super(context);
-
-        mSharedPreferences = getReactApplicationContext().getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
-        mListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-                getReactApplicationContext()
-                        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                        .emit("sync", getPreferences());
-            }
-        };
-
-        mSharedPreferences.registerOnSharedPreferenceChangeListener(mListener);
+        mSharedPreferences = getReactApplicationContext().getSharedPreferences("react-native-preference", Context.MODE_PRIVATE);
     }
 
     public String getName() {
@@ -45,34 +32,18 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void set(ReadableMap data, Promise promise) {
+    public void set(String data, Promise promise) {
         SharedPreferences.Editor editor = getEditor();
-        ReadableMapKeySetIterator iterator = data.keySetIterator();
-        while(iterator.hasNextKey()) {
-            String key = iterator.nextKey();
-            editor.putString(key, data.getString(key));
-        }
-
-        editor.commit();
+        editor.putString(mPreferenceKey, data);
+        editor.apply();
         promise.resolve(getPreferences());
     }
 
     @ReactMethod
-    public void clearAll(Promise promise) {
+    public void clear(Promise promise) {
         SharedPreferences.Editor editor = getEditor();
-        Map<String, ?> allEntries = mSharedPreferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            editor.remove(entry.getKey());
-        }
-        editor.commit();
-        promise.resolve(getPreferences());
-    }
-
-    @ReactMethod
-    public void clear(String key, Promise promise) {
-        SharedPreferences.Editor editor = getEditor();
-        editor.remove(key);
-        editor.commit();
+        editor.remove(mPreferenceKey);
+        editor.apply();
         promise.resolve(getPreferences());
     }
 
@@ -83,14 +54,8 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         return constants;
     }
 
-    private ReadableMap getPreferences() {
-        WritableMap result = Arguments.createMap();
-        Map<String, ?> allEntries = mSharedPreferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            result.putString(entry.getKey(), entry.getValue().toString());
-        }
-
-        return result;
+    private String getPreferences() {
+        return mSharedPreferences.getString(mPreferenceKey, "{}");
     }
 
     private SharedPreferences.Editor getEditor() {
@@ -99,7 +64,7 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onCatalystInstanceDestroy() {
-        mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mListener);
+        //mSharedPreferences.unregisterOnSharedPreferenceChangeListener(mListener);
     }
 
 }
