@@ -35,7 +35,7 @@ const preference = Preference.get('some-preference');
 
 ## Set
 
-`Preference.clear(key: String|Object, value?: String): Promise`
+`Preference.set(key: String|Object, value?: String): Promise`
 
 ```
 
