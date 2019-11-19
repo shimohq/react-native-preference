@@ -8,6 +8,10 @@ NSString *const PREFERENCE_KEY = @"RNPreferenceKey";
 
 RCT_EXPORT_MODULE()
 
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
 
 RCT_EXPORT_METHOD(set:(NSString *)data
                   resolve:(RCTPromiseResolveBlock)resolve
