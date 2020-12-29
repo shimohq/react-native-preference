@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RNPreferenceManager : NSObject <RCTBridgeModule>
-
+@interface RNPreferenceManager : RCTEventEmitter <RCTBridgeModule>
 + (id)getPreference:(NSString *)key;
-
++ (NSString *)getPreferences;
 @end
