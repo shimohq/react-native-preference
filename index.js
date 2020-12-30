@@ -10,7 +10,7 @@ try {
     console.warn(`preference parse exception:${err.message}`);
 }
 
-function get(key?: String) {
+function get(key) {
     if (key != null) {
         return PREFERENCES[key];
     } else {
@@ -20,7 +20,7 @@ function get(key?: String) {
     }
 }
 
-function set(key: String|Object, value?: String) {
+function set(key, value) {
     let data = {};
 
     if (typeof key === 'object') {
@@ -43,7 +43,7 @@ function set(key: String|Object, value?: String) {
     return RNPreferenceManager.set(JSON.stringify(PREFERENCES));
 }
 
-function clear(key?: String|Array) {
+function clear(key) {
     if (key == null) {
         PREFERENCES = {};
         return RNPreferenceManager.clear();
