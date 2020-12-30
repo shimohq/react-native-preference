@@ -61,12 +61,13 @@ function clear(key?: String|Array) {
     }
 }
 
-function setWhiteList(list: Array) {
+function setWhiteList(list) {
     RNPreferenceManager.setWhiteList(list);
 }
 
 export default {
     get,
     set,
-    clear
+    clear,
+    setWhiteList
 }
