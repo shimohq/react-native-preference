@@ -19,6 +19,7 @@
 		454366064AC398BACCC6CA17 /* libPods-TestDemo-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A3692A6784BC35786F94CD /* libPods-TestDemo-tvOS.a */; };
 		6A43D85DC9B9674AF1AC380A /* libPods-TestDemo-TestDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E29ED047E5CDF51652393170 /* libPods-TestDemo-TestDemoTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8F20087D259D772800B3A66B /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F20087C259D772800B3A66B /* SceneDelegate.m */; };
 		D6CEBABB5989B93CD820A1A8 /* libPods-TestDemo-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F65A8A73EA939F76E97A3187 /* libPods-TestDemo-tvOSTests.a */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +60,8 @@
 		5726EDE8538BB6F9D62FCAC9 /* Pods-TestDemo-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestDemo-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-TestDemo-tvOS/Pods-TestDemo-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = TestDemo/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		83662053B968956C44477487 /* Pods-TestDemo-TestDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestDemo-TestDemoTests.release.xcconfig"; path = "Target Support Files/Pods-TestDemo-TestDemoTests/Pods-TestDemo-TestDemoTests.release.xcconfig"; sourceTree = "<group>"; };
+		8F20087B259D772800B3A66B /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SceneDelegate.h; path = TestDemo/SceneDelegate.h; sourceTree = "<group>"; };
+		8F20087C259D772800B3A66B /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = SceneDelegate.m; path = TestDemo/SceneDelegate.m; sourceTree = "<group>"; };
 		9B7E68161387D219084FF884 /* Pods-TestDemo-TestDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TestDemo-TestDemoTests.debug.xcconfig"; path = "Target Support Files/Pods-TestDemo-TestDemoTests/Pods-TestDemo-TestDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B2A3692A6784BC35786F94CD /* libPods-TestDemo-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TestDemo-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E29ED047E5CDF51652393170 /* libPods-TestDemo-TestDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TestDemo-TestDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -128,6 +131,8 @@
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				8F20087B259D772800B3A66B /* SceneDelegate.h */,
+				8F20087C259D772800B3A66B /* SceneDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
@@ -194,7 +199,6 @@
 				F1C2712C12548EF7C451F908 /* Pods-TestDemo-tvOSTests.debug.xcconfig */,
 				13D12DCCC276AD875460178C /* Pods-TestDemo-tvOSTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -569,6 +573,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				8F20087D259D772800B3A66B /* SceneDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -658,6 +663,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = TestDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -668,6 +674,7 @@
 				PRODUCT_NAME = TestDemo;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -680,6 +687,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = TestDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -689,6 +697,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = TestDemo;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
