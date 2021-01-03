@@ -12,7 +12,7 @@
 #import <React/RCTBridgeDelegate.h>
 
 #import "AppDelegate.h"
-
+#import "RootVC.h"
 
 @implementation SceneDelegate
 
@@ -30,13 +30,12 @@
   
   UIWindowScene *windowScene = [[UIWindowScene alloc] initWithSession:session connectionOptions:connectionOptions];
   UIWindow *window = [[UIWindow alloc] initWithWindowScene:windowScene];
-  UIViewController *rootViewController = [[UIViewController alloc] init];
+  RootVC *rootViewController = [[RootVC alloc] init];
   rootViewController.view = rootView;
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
   self.window = window;
   [appDelegate setWindow:self.window];
-    
 }
 
 - (void)sceneDidDisconnect:(UIScene *)scene  API_AVAILABLE(ios(13.0)){
@@ -66,6 +65,5 @@
 - (void)scene:(UIScene *)scene openURLContexts:(NSSet<UIOpenURLContext *> *)URLContexts  API_AVAILABLE(ios(13.0)){
     
 }
-
 
 @end
