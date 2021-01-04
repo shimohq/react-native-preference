@@ -28,7 +28,7 @@
                                                initialProperties:nil
                                                    launchOptions:appDelegate.launchOptions];
   
-  UIWindowScene *windowScene = [[UIWindowScene alloc] initWithSession:session connectionOptions:connectionOptions];
+  UIWindowScene *windowScene = (UIWindowScene *)scene;  
   UIWindow *window = [[UIWindow alloc] initWithWindowScene:windowScene];
   RootVC *rootViewController = [[RootVC alloc] init];
   rootViewController.view = rootView;
