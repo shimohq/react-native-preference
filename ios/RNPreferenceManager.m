@@ -44,7 +44,7 @@ RCT_EXPORT_METHOD(getPreferenceForKey:(NSString *)key
 }
 
 RCT_EXPORT_METHOD(setWhiteList:(NSArray *)whiteList) {
-    NSLog(@"---- set whitelist : %@",whiteList);
+    //NSLog(@"---- set whitelist : %@",whiteList);
     [RNPreferenceSingleton shareInstance].whiteList = whiteList;
 }
 

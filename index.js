@@ -1,6 +1,33 @@
 import { NativeModules, NativeEventEmitter } from 'react-native';
 
 const { RNPreferenceManager } = NativeModules;
+const eventEmitter = new NativeEventEmitter(RNPreferenceManager);
+const listeners = new Set();
+
+eventEmitter.addListener('SHMPreferenceWhiteListChanged',(info) => {
+    if (Object.keys(info).length === 0) {
+        clear();
+    } else {
+        for (const key in info) {
+            set(key,info[key]);
+        }        
+    }
+    
+    for(let listener of listeners){
+        listener();
+    }
+});
+
+function addPrefernceChangedListener(callback){
+    const listener = ()=>{
+        callback();
+    };
+    listeners.add(listener);
+    return ()=>{
+        listeners.delete(listener);
+    }
+}
+
 
 let PREFERENCES = {};
 
@@ -66,8 +93,9 @@ function setWhiteList(list) {
 }
 
 export default {
+    addPrefernceChangedListener,
+    setWhiteList,
     get,
     set,
-    clear,
-    setWhiteList
+    clear
 }

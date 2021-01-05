@@ -47,21 +47,24 @@ static RNPreferenceSingleton *_instance = nil;
         return;
     }
     
-    // set Singleton , set UD
-    [RNPreferenceSingleton shareInstance].singlePerference = obj;
-    [[NSUserDefaults standardUserDefaults] setObject:data forKey:kSHMPreferenceKey];
-    
-    if (![RNPreferenceSingleton shareInstance].whiteList.count) NSLog(@"RNPreference- white list is nil !");
+    if (![RNPreferenceSingleton shareInstance].whiteList.count) NSLog(@"RNPreference - white list is nil !");
     
     // Diff
     NSDictionary *dicNew = obj;
     NSDictionary *dicOld = [RNPreferenceSingleton shareInstance].singlePerference;
     // 1. perfernce整体是否相等
     if (![dicNew isEqualToDictionary:dicOld]) {
+        if ([data isEqualToString:@"{}"] && dicOld != nil) { // clear的情况
+            [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceChangedNotification object:@{}];
+            return;
+        }
+        
         // 2. 取whitelist
         [self.whiteList enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL * _Nonnull stop) {
-            NSString *strNew = [dicNew[key] stringValue];
-            NSString *strOld = [dicOld[key] stringValue];
+            NSString *strNew = dicNew[key];
+            NSString *strOld = dicOld[key];
+            if (!strNew || !strNew.length) return;
+            
             if (![strNew isEqualToString:strOld]) {
                 //3. js emitter 通知其他window
                 NSDictionary *item = @{key: strNew};
@@ -70,9 +73,15 @@ static RNPreferenceSingleton *_instance = nil;
             }
         }];
     }
+    
+    // set Singleton , set UD
+    [RNPreferenceSingleton shareInstance].singlePerference = obj;
+    [[NSUserDefaults standardUserDefaults] setObject:data forKey:kSHMPreferenceKey];
 }
 
 - (void)clear {
+    [self setPreferenceData:@"{}"];
+    
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSHMPreferenceKey];
     self.singlePerference = nil;
 }

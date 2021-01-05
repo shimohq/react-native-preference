@@ -7,6 +7,7 @@ import {
     TextInput,
     Button,
     ScrollView,
+    NativeEventEmitter,
 } from 'react-native';
 import Preference from 'react-native-preference';
 
@@ -16,6 +17,13 @@ export default class TestDemo extends Component {
         this.state = {
             preference: Preference.get(),
         };
+
+        Preference.setWhiteList(['a', 'b', 'c']);
+        Preference.addPrefernceChangedListener(() => {
+            this.setState({
+                preference: Preference.get(),
+            });
+        });
     }
 
     _key = null;
