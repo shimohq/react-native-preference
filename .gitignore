@@ -39,3 +39,8 @@ yarn.lock
 # webstorm
 #
 *.iml
+
+
+# TestDemo
+/TestDemo/ios/Pods
+
