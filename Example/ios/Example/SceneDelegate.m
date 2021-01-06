@@ -1,6 +1,6 @@
 //
 //  SceneDelegate.m
-//  TestDemo
+//  Example
 //
 //  Created by teason23 on 2020/12/31.
 //
@@ -24,7 +24,7 @@
   NSURL *jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"
                                                                          fallbackResource:nil];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@"TestDemo"
+                                                      moduleName:@"Example"
                                                initialProperties:nil
                                                    launchOptions:appDelegate.launchOptions];
   
