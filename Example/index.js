@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Preference from 'react-native-preference';
 
-export default class TestDemo extends Component {
+export default class Example extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
     },
 });
 
-AppRegistry.registerComponent('TestDemo', () => TestDemo);
+AppRegistry.registerComponent('Example', () => Example);
