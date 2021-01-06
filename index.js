@@ -88,6 +88,7 @@ function clear(key) {
     }
 }
 
+// 设置白名单, (需要接收状态发生改变的keys)
 function setWhiteList(list) {
     RNPreferenceManager.setWhiteList(list);
 }

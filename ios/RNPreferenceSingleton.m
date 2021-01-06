@@ -66,7 +66,7 @@ static RNPreferenceSingleton *_instance = nil;
             if (!strNew || !strNew.length) return;
             
             if (![strNew isEqualToString:strOld]) {
-                //3. js emitter 通知其他window
+                //3. data变化, 通知js
                 NSDictionary *item = @{key: strNew};
                 NSLog(@"RNPreference (key) %@ , Changed : %@",key,item);
                 [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceChangedNotification object:@{key: strNew}];

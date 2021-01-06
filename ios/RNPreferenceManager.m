@@ -43,8 +43,8 @@ RCT_EXPORT_METHOD(getPreferenceForKey:(NSString *)key
     resolve( [[RNPreferenceSingleton shareInstance] getPreferenceValueForKey:key] );
 }
 
+// 设置白名单, (需要接收状态发生改变的keys)
 RCT_EXPORT_METHOD(setWhiteList:(NSArray *)whiteList) {
-    //NSLog(@"---- set whitelist : %@",whiteList);
     [RNPreferenceSingleton shareInstance].whiteList = whiteList;
 }
 
