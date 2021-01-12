@@ -10,6 +10,7 @@ import {
     NativeEventEmitter,
 } from 'react-native';
 import Preference from 'react-native-preference';
+import {name as appName} from './app.json';
 
 export default class Example extends Component {
     constructor(props) {
@@ -112,4 +113,4 @@ const styles = StyleSheet.create({
     },
 });
 
-AppRegistry.registerComponent('Example', () => Example);
+AppRegistry.registerComponent(appName, () => Example);
