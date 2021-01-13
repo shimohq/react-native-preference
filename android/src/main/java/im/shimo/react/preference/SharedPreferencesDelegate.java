@@ -3,6 +3,8 @@ package im.shimo.react.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
+
 /**
  * Created by jiang on 2019-12-26
  */
@@ -16,6 +18,8 @@ public class SharedPreferencesDelegate {
     }
 
     protected SharedPreferences mSharedPreferences;
+
+    public static ArrayList<Object> whiteList;
 
     protected SharedPreferencesDelegate(Context context) {
         mSharedPreferences = context.getApplicationContext()

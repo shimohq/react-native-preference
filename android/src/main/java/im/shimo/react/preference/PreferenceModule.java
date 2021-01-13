@@ -1,9 +1,12 @@
 package im.shimo.react.preference;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +35,18 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         SharedPreferencesDelegate.getInstance().remove(mPreferenceKey);
         promise.resolve(getPreferences());
     }
+
+    @ReactMethod
+    public void getPreferenceForKey(String key, Promise promise) {
+        //SharedPreferencesDelegate.getInstance();
+    }
+
+    @ReactMethod
+    public void setWhiteList(ReadableArray whiteList) {
+        SharedPreferencesDelegate.getInstance().whiteList = whiteList.toArrayList();
+    }
+
+
 
     @Override
     public Map<String, Object> getConstants() {
