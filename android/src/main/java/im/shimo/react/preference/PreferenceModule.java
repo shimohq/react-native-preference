@@ -1,7 +1,5 @@
 package im.shimo.react.preference;
 
-import android.util.Log;
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -14,8 +12,6 @@ import java.util.Map;
 
 public class PreferenceModule extends ReactContextBaseJavaModule {
 
-    private final String mPreferenceKey = "data";
-
     public PreferenceModule(ReactApplicationContext context) {
         super(context);
     }
@@ -26,19 +22,20 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void set(String data, Promise promise) {
-        getDelegate().set(mPreferenceKey,data);
-        promise.resolve(getPreferences());
+        getDelegate().setPreferenceData(data);
+        promise.resolve(getDelegate().getAllPreferences());
     }
 
     @ReactMethod
     public void clear(Promise promise) {
-        getDelegate().remove(mPreferenceKey);
-        promise.resolve(getPreferences());
+        getDelegate().remove();
+        promise.resolve(getDelegate().getAllPreferences());
     }
 
     @ReactMethod
     public void getPreferenceForKey(String key, Promise promise) {
-        //getDelegate();
+        getDelegate().getPreferenceValueForKey(key);
+        promise.resolve(getDelegate().getAllPreferences());
     }
 
     @ReactMethod
@@ -51,13 +48,13 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
-        constants.put("InitialPreferences", getPreferences());
+        constants.put("InitialPreferences", getDelegate().getAllPreferences());
         return constants;
     }
 
-    private String getPreferences() {
-        return getDelegate().get(mPreferenceKey, "{}");
-    }
+
+
+
 
     private SharedPreferencesDelegate getDelegate(){
         if (SharedPreferencesDelegate.getInstance()==null){
@@ -65,8 +62,6 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         }
         return SharedPreferencesDelegate.getInstance();
     }
-
-
 
     @Override
     public void onCatalystInstanceDestroy() {
