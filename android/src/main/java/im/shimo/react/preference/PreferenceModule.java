@@ -26,24 +26,24 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void set(String data, Promise promise) {
-        SharedPreferencesDelegate.getInstance().set(mPreferenceKey,data);
+        getDelegate().set(mPreferenceKey,data);
         promise.resolve(getPreferences());
     }
 
     @ReactMethod
     public void clear(Promise promise) {
-        SharedPreferencesDelegate.getInstance().remove(mPreferenceKey);
+        getDelegate().remove(mPreferenceKey);
         promise.resolve(getPreferences());
     }
 
     @ReactMethod
     public void getPreferenceForKey(String key, Promise promise) {
-        //SharedPreferencesDelegate.getInstance();
+        //getDelegate();
     }
 
     @ReactMethod
     public void setWhiteList(ReadableArray whiteList) {
-        SharedPreferencesDelegate.getInstance().whiteList = whiteList.toArrayList();
+        getDelegate().whiteList = whiteList.toArrayList();
     }
 
 
@@ -56,7 +56,14 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     }
 
     private String getPreferences() {
-        return SharedPreferencesDelegate.getInstance().get(mPreferenceKey, "{}");
+        return getDelegate().get(mPreferenceKey, "{}");
+    }
+
+    private SharedPreferencesDelegate getDelegate(){
+        if (SharedPreferencesDelegate.getInstance()==null){
+            SharedPreferencesDelegate.createInstance(getReactApplicationContext());
+        }
+        return SharedPreferencesDelegate.getInstance();
     }
 
 

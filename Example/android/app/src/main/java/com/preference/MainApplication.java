@@ -2,7 +2,9 @@ package com.preference;
 
 import android.app.Application;
 import android.content.Context;
+import android.preference.PreferenceManager;
 
+import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -22,9 +24,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-            new MainReactPackage()
-      );
+        return new PackageList(this).getPackages();
     }
 
     @Override
