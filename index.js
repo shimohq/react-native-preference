@@ -1,33 +1,37 @@
-import { NativeModules, NativeEventEmitter } from 'react-native';
+import {NativeModules, NativeEventEmitter} from 'react-native';
 
-const { RNPreferenceManager } = NativeModules;
+const {RNPreferenceManager} = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNPreferenceManager);
 const listeners = new Set();
 
-eventEmitter.addListener('SHMPreferenceWhiteListChanged',(info) => {
-    if (Object.keys(info).length === 0) {
-        clear();
-    } else {
-        for (const key in info) {
-            set(key,info[key]);
-        }        
+eventEmitter.addListener('SHMPreferenceWhiteListChanged', (info) => {
+    for (const key in info) {
+        set(key, info[key]);
     }
-    
-    for(let listener of listeners){
+
+    for (let listener of listeners) {
         listener();
     }
 });
 
-function addPrefernceChangedListener(callback){
-    const listener = ()=>{
+eventEmitter.addListener('SHMPreferenceClear', () => {
+    if (Object.keys(PREFERENCES).length !== 0) {
+        clear();
+        for (let listener of listeners) {
+            listener();
+        }
+    }
+});
+
+function addPrefernceChangedListener(callback) {
+    const listener = () => {
         callback();
     };
     listeners.add(listener);
-    return ()=>{
+    return () => {
         listeners.delete(listener);
-    }
+    };
 }
-
 
 let PREFERENCES = {};
 
@@ -42,20 +46,23 @@ function get(key) {
         return PREFERENCES[key];
     } else {
         return {
-            ...PREFERENCES
+            ...PREFERENCES,
         };
     }
 }
 
 function set(key, value) {
     let data = {};
+    let keyStr;
 
     if (typeof key === 'object') {
         data = {
-            ...key
+            ...key,
         };
+        keyStr = JSON.stringify(key);
     } else {
         data[key] = value;
+        keyStr = key;
     }
 
     Object.keys(data).forEach((name) => {
@@ -67,7 +74,7 @@ function set(key, value) {
         }
     });
 
-    return RNPreferenceManager.set(JSON.stringify(PREFERENCES));
+    return RNPreferenceManager.set(keyStr, value);
 }
 
 function clear(key) {
@@ -98,5 +105,5 @@ export default {
     setWhiteList,
     get,
     set,
-    clear
-}
+    clear,
+};
