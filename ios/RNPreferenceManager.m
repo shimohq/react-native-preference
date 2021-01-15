@@ -1,11 +1,13 @@
 #import <React/RCTConvert.h>
 #import "RNPreferenceManager.h"
 
+static NSString *const kSHMPreferenceChangedEmitterTag = @"SHMPreferenceWhiteListChanged";
+static NSString *const kSHMPreferenceClearEmitterTag = @"SHMPreferenceClear";
 
 @implementation RNPreferenceManager
 RCT_EXPORT_MODULE()
 + (BOOL)requiresMainQueueSetup { return YES; }
-- (NSArray<NSString *> *)supportedEvents { return @[kSHMPreferenceChangedNotification];}
+- (NSArray<NSString *> *)supportedEvents { return @[kSHMPreferenceChangedEmitterTag,kSHMPreferenceClearEmitterTag];}
 - (instancetype)init {
     self = [super init];
     if (self) {
@@ -15,19 +17,25 @@ RCT_EXPORT_MODULE()
 }
 - (void)startObserving {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perferenceChanged:) name:kSHMPreferenceChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleared) name:kSHMPreferenceClearNotification object:nil];
 }
 - (void)stopObserving {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kSHMPreferenceChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kSHMPreferenceClearNotification object:nil];
 }
 - (void)perferenceChanged:(NSNotification *)notification {
-    [self sendEventWithName:kSHMPreferenceChangedNotification body:notification.object];
+    [self sendEventWithName:kSHMPreferenceChangedEmitterTag body:notification.object];
+}
+- (void)cleared {
+    [self sendEventWithName:kSHMPreferenceClearEmitterTag body:nil];
 }
 
 
-RCT_EXPORT_METHOD(set:(NSString *)data
+RCT_EXPORT_METHOD(set:(NSString *)key
+                  value:(NSString *)value
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [[RNPreferenceSingleton shareInstance] setPreferenceData:data];
+    [[RNPreferenceSingleton shareInstance] setPreferenceValue:value forKey:key];
     resolve([RNPreferenceSingleton getAllPreferences]);
 }
 
@@ -49,7 +57,7 @@ RCT_EXPORT_METHOD(setWhiteList:(NSArray *)whiteList) {
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{ @"InitialPreferences": [RNPreferenceSingleton getAllPreferences] };
+    return @{ @"InitialPreferences" : RCTJSONStringify([RNPreferenceSingleton shareInstance].singlePerference, nil) };
 }
 
 @end
