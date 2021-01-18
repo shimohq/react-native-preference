@@ -43,36 +43,16 @@ static RNPreferenceSingleton *_instance = nil;
 }
 
 - (void)setJSPreferenceChangedDataString:(NSString *)jsonStr {
-    NSMutableDictionary *tmpDic = [self.singlePerference mutableCopy];
-    
     NSDictionary *dicChanged = RCTJSONParse(jsonStr, nil);
     for (NSString *key in dicChanged.allKeys) {
         id value = dicChanged[key];
-        
-        if (!value || [value isKindOfClass:NSNull.class]) {
-            // value is null , clear key
-            [tmpDic removeObjectForKey:key];
-            
-            if ([self.whiteList containsObject:key]) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceClearNotification object:key];
-            }
-        } else {
-            [tmpDic setObject:value forKey:key];
-            
-            if ([self.whiteList containsObject:key]) {
-                NSDictionary *item = @{key:value};
-                NSLog(@"RNPreference js Changed : %@",item);
-                [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceChangedNotification object:item];
-            }
-        }
-        
-        // set SingletonData , set UD
-        [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(tmpDic, nil) forKey:kSHMPreferenceKey];
-        self.singlePerference = tmpDic;
+        [self setPreferenceValue:value forKey:key];
     }
 }
 
 - (void)clear {
+    if (!self.singlePerference.allKeys.count) return;
+        
     [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceClearNotification object:nil];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSHMPreferenceKey];
     self.singlePerference = [@{} mutableCopy];
@@ -89,37 +69,28 @@ static RNPreferenceSingleton *_instance = nil;
 }
 
 
-- (void)nativeSetPreferenceValue:(id)value
-                          forKey:(NSString *)key {
+- (void)setPreferenceValue:(id)value forKey:(NSString *)key {
     if (!value || [value isKindOfClass:NSNull.class]) {
+        // value is null , clear key .
         [self clearValueForKey:key];
+        
         return;
     }
 
-    NSMutableDictionary *dic = [self.singlePerference mutableCopy];
-    [dic setObject:value forKey:key];
+    NSMutableDictionary *dicNew = [self.singlePerference mutableCopy];
+    [dicNew setObject:value forKey:key];
     
     if (![RNPreferenceSingleton shareInstance].whiteList.count) NSLog(@"RNPreference - white list is nil !");
     
     // Diff
-    NSDictionary *dicNew = dic;
-    NSDictionary *dicOld = [RNPreferenceSingleton shareInstance].singlePerference;
-    // 1. perfernce整体是否相等
-    if (![dicNew isEqualToDictionary:dicOld]) {
-        // 2. 取whitelist
-        [self.whiteList enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL * _Nonnull stop) {
-            id valueNew = dicNew[key];
-            id valueOld = dicOld[key];
-                            
-            if (![valueNew isEqual:valueOld]) {
-                //3. data变化, 通知js
-                NSDictionary *item = @{key: valueNew};
-                NSLog(@"native RNPreference Changed : %@",item);
-                [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceChangedNotification object:item];
-            }
-        }];
+    if (![value isEqual:self.singlePerference[key]]) {
+        if ([self.whiteList containsObject:key]) {
+            // in white list
+            NSDictionary *item = @{key:value};
+            NSLog(@"native RNPreference Changed : %@",item);
+            [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceChangedNotification object:item];
+        }
     }
-    
     // set Singleton , set UD
     [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(dicNew, nil) forKey:kSHMPreferenceKey];
     [self.singlePerference setObject:value forKey:key];

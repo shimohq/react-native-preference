@@ -30,8 +30,8 @@ extern NSString *const kSHMPreferenceClearNotification;
 ///JS set Preference Changed Data
 ///@param jsonStr {key:value,....}
 - (void)setJSPreferenceChangedDataString:(NSString *)jsonStr;
-///Native set Preference value for key (native do diff)
-- (void)nativeSetPreferenceValue:(id)value forKey:(NSString *)key;
+///set Preference value for key
+- (void)setPreferenceValue:(id)value forKey:(NSString *)key;
 
 // Clear
 - (void)clear;
