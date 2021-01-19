@@ -56,7 +56,7 @@ RCT_EXPORT_METHOD(setWhiteList:(NSArray *)whiteList) {
 }
 
 - (NSDictionary *)constantsToExport {
-    return @{ @"InitialPreferences" : RCTJSONStringify([RNPreferenceSingleton shareInstance].singlePerference, nil) };
+    return @{ @"InitialPreferences" : RCTJSONStringify([RNPreferenceSingleton shareInstance].singlePreference, nil) };
 }
 
 @end

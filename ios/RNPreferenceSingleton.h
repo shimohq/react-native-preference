@@ -19,7 +19,7 @@ extern NSString *const kSHMPreferenceClearNotification;
 @interface RNPreferenceSingleton : NSObject
 + (instancetype)shareInstance;
 
-@property (strong, nonatomic) NSMutableDictionary *singlePerference;
+@property (strong, nonatomic) NSMutableDictionary *singlePreference;
 @property (copy, nonatomic) NSArray *whiteList;
 
 // Get
