@@ -25,7 +25,7 @@ eventEmitter.addListener('SHMPreferenceClear', info => {
             }
         }
     } else {
-        // clear all
+        //clear all
         if (Object.keys(PREFERENCES).length !== 0) {
             clear();
             for (let listener of listeners) {
