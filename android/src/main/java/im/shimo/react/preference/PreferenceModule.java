@@ -24,6 +24,8 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
 
     private BroadcastReceiver sharePreferenceReceiver;
     private Gson gson = new Gson();
+    private final String kSHMPreferenceChangedEmitterTag = "SHMPreferenceWhiteListChanged";
+    private final String kSHMPreferenceClearEmitterTag = "SHMPreferenceClear";
 
     public PreferenceModule(ReactApplicationContext context) {
         super(context);
@@ -35,14 +37,14 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void set(String data, Promise promise) {
-        getDelegate().setPreferenceData(data);
+    public void set(String jsonStr, Promise promise) {
+        getDelegate().setJSPreferenceChangedDataString(jsonStr);
         promise.resolve(getDelegate().getAllPreferences());
     }
 
     @ReactMethod
     public void clear(Promise promise) {
-        getDelegate().remove();
+        getDelegate().clear();
         promise.resolve(getDelegate().getAllPreferences());
     }
 
@@ -80,22 +82,40 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
         sharePreferenceReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String msg = intent.getStringExtra("MSG");
-                HashMap<String,String> msgMap = gson.fromJson(msg, HashMap.class);
-                WritableMap map = Arguments.createMap();
-                for (Map.Entry<String, String> entry : msgMap.entrySet()) {
-                    map.putString(entry.getKey(),entry.getValue());
+                if (intent.getAction().equals(SharedPreferencesDelegate.kSHMPreferenceChangedNotification)) {
+                    String msg = intent.getStringExtra("MSG");
+                    HashMap<String,String> msgMap = gson.fromJson(msg, HashMap.class);
+                    WritableMap map = Arguments.createMap();
+                    for (Map.Entry<String, String> entry : msgMap.entrySet()) {
+                        map.putString(entry.getKey(),entry.getValue());
+                    }
+
+                    sendEvent(
+                        getReactApplicationContext(),
+                        kSHMPreferenceChangedEmitterTag,
+                        map
+                    );
                 }
 
-                sendEvent(
-                    getReactApplicationContext(),
-                    SharedPreferencesDelegate.kSHMPreferenceChangedNotification,
-                    map
+                if (intent.getAction().equals(SharedPreferencesDelegate.kSHMPreferenceClearedNotification)) {
+                    String key = intent.getStringExtra("MSG");
+                    WritableMap map = Arguments.createMap();
+                    if (key != null) {
+                        map.putString("key", key);
+                    }
+
+                    sendEvent(
+                        getReactApplicationContext(),
+                        kSHMPreferenceClearEmitterTag,
+                        map
                     );
+                }
             }
         };
-        IntentFilter intentFilter = new IntentFilter(SharedPreferencesDelegate.kSHMPreferenceChangedNotification);
-        getReactApplicationContext().registerReceiver(sharePreferenceReceiver, intentFilter);
+        IntentFilter dataIntentFilter = new IntentFilter(SharedPreferencesDelegate.kSHMPreferenceChangedNotification);
+        getReactApplicationContext().registerReceiver(sharePreferenceReceiver, dataIntentFilter);
+        IntentFilter clearIntentFilter = new IntentFilter(SharedPreferencesDelegate.kSHMPreferenceClearedNotification);
+        getReactApplicationContext().registerReceiver(sharePreferenceReceiver, clearIntentFilter);
     }
 
     private void sendEvent(ReactContext reactContext,

@@ -18,8 +18,8 @@ public class SharedPreferencesDelegate {
 
     protected static volatile SharedPreferencesDelegate INSTANCE;
 
-    public static String kSHMPreferenceChangedNotification = "SHMPreferenceWhiteListChanged";
-
+    public static final String kSHMPreferenceChangedNotification = "SHMPreference_WhiteList_Notification";
+    public static final String kSHMPreferenceClearedNotification = "SHMPreference_Clear_Notification";
     private final String mPreferenceKey = "data";
 
     public static SharedPreferencesDelegate getInstance() {
@@ -33,7 +33,7 @@ public class SharedPreferencesDelegate {
     private Context mContext;
 
     public ArrayList<Object> whiteList;
-    public Map<String, String> singlePreference;
+    public HashMap<String, Object> singlePreference;
 
     protected SharedPreferencesDelegate(Context context) {
         mSharedPreferences = context.getApplicationContext()
@@ -49,77 +49,83 @@ public class SharedPreferencesDelegate {
     }
 
     public String getPreferenceValueForKey(String key) {
-        return INSTANCE.singlePreference.get(key);
+        return (String)(INSTANCE.singlePreference.get(key));
     }
 
-    public void setPreferenceItem(String value, String key) {
-        HashMap<String, String> tmpMap = new HashMap<String, String>();
-        tmpMap.putAll(INSTANCE.singlePreference);
-        tmpMap.put(key,value);
-        setPreferenceData(gson.toJson(tmpMap,HashMap.class));
+    public void setJSPreferenceChangedDataString(String jsonStr) {
+        Map<String,Object> mapChanged = gson.fromJson(jsonStr,Map.class);
+        for (String key : mapChanged.keySet()) {
+            Object value = mapChanged.get(key);
+            setPreferenceItem(value, key);
+        }
     }
 
-    public void setPreferenceData(String data) {
-        Map<String, String> obj = gson.fromJson(data, Map.class);
-        if (obj == null) {
-            Log.w(TAG, "err: setPreferenceData - wrong data type!");
+    public void clear() {
+        if (INSTANCE.singlePreference.keySet().size() == 0) return;
+
+        //Broadcast
+        Intent intent = new Intent(kSHMPreferenceClearedNotification);
+        INSTANCE.mContext.sendBroadcast(intent);
+
+        //clear
+        INSTANCE.singlePreference = new HashMap<>();
+        SharedPreferences.Editor editor = getEditor();
+        editor.remove(mPreferenceKey);
+        editor.apply();
+    }
+
+    public void clearValueForKey(String key) {
+        if (!INSTANCE.singlePreference.keySet().contains(key)) return;
+
+        //clear
+        INSTANCE.singlePreference.remove(key);
+        SharedPreferences.Editor editor = getEditor();
+        editor.putString(mPreferenceKey, gson.toJson(INSTANCE.singlePreference,HashMap.class));
+        editor.apply();
+
+        if (INSTANCE.whiteList.contains(key)) {
+            //Broadcast
+            Intent intent = new Intent(kSHMPreferenceClearedNotification);
+            intent.putExtra("MSG", key);
+            INSTANCE.mContext.sendBroadcast(intent);
+        }
+    }
+
+
+    public void setPreferenceItem(Object value, String key) {
+        if (value == null) { // value is null , clear key
+            clearValueForKey(key);
             return;
         }
+
+        HashMap<String,Object> tmpMap = new HashMap<>();
+        tmpMap.putAll(INSTANCE.singlePreference);
+        tmpMap.put(key,value);
 
         if (INSTANCE.whiteList.size() == 0) {
             Log.w(TAG, "RNPreference - white list is null !");
         }
 
         // Diff
-        Map<String, String> mapNew = obj;
-        Map<String, String> mapOld = INSTANCE.singlePreference;
-
-        // set data
-        INSTANCE.singlePreference = obj;
-        SharedPreferences.Editor editor = getEditor();
-        editor.putString(mPreferenceKey, data);
-        editor.apply();
-
-        // 1. map is equal
-        if (!mapNew.equals(mapOld)) {
-            if (data.equals("{}") && mapOld != null) {
+        if (!value.equals(INSTANCE.singlePreference.get(key))) {
+            if (INSTANCE.whiteList.contains(key)) {
+                // in white list
+                Log.d(TAG, String.format( "RNPreference Changed :  {%s} {%s}",key,value));
+                // Broadcast
                 Intent intent = new Intent(kSHMPreferenceChangedNotification);
-                intent.putExtra("MSG", "{}");
+                HashMap<String, Object> msgMap = new HashMap<String, Object>();
+                msgMap.put(key,value);
+                intent.putExtra("MSG", gson.toJson(msgMap,HashMap.class));
                 INSTANCE.mContext.sendBroadcast(intent);
-
-                return;
-            }
-
-            //2. whitelist
-            for (int i = 0; i < INSTANCE.whiteList.size(); i ++) {
-                String key = (String)INSTANCE.whiteList.get(i);
-                String strNew = mapNew.get(key);
-                String strOld = mapOld.get(key);
-                if (strNew == null || strNew.length() == 0) return;
-
-                if (!strNew.equals(strOld)) {
-                    //3. data changed, send msg to JS
-                    Map<String, String> item = new HashMap<>();
-                    item.put(key,strNew);
-                    Log.d(TAG, String.format( "RNPreference (key) {%s} , Changed : {%s}",key,strNew));
-                    Intent intent = new Intent(kSHMPreferenceChangedNotification);
-                    Map<String, String> msgMap = new HashMap<String, String>();
-                    msgMap.put(key,strNew);
-                    intent.putExtra("MSG", gson.toJson(msgMap,Map.class));
-                    INSTANCE.mContext.sendBroadcast(intent);
-                }
             }
         }
-    }
 
-
-    public void remove() {
+        // set
+        INSTANCE.singlePreference = tmpMap;
         SharedPreferences.Editor editor = getEditor();
-        editor.remove(mPreferenceKey);
+        editor.putString(mPreferenceKey, gson.toJson(tmpMap,HashMap.class));
         editor.apply();
     }
-
-
 
     public void register(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         mSharedPreferences.registerOnSharedPreferenceChangeListener(listener);
@@ -134,7 +140,7 @@ public class SharedPreferencesDelegate {
             synchronized (SharedPreferencesDelegate.class) {
                 if (INSTANCE == null) {
                     INSTANCE = new SharedPreferencesDelegate(context);
-                    INSTANCE.singlePreference = INSTANCE.gson.fromJson(INSTANCE.getAllPreferences(), Map.class);
+                    INSTANCE.singlePreference = INSTANCE.gson.fromJson(INSTANCE.getAllPreferences(), HashMap.class);
                     INSTANCE.mContext = context;
                 }
             }
