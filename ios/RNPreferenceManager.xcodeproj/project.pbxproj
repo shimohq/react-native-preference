@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1017893C1B283EE1006C41B8 /* libRNPreferenceManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 101789301B283EE1006C41B8 /* libRNPreferenceManager.a */; };
 		7FE295451E03BDA2009E7610 /* RNPreferenceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FE295441E03BDA2009E7610 /* RNPreferenceManager.m */; };
+		8F00731A259C7A0E00F5A638 /* RNPreferenceSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F007319259C7A0E00F5A638 /* RNPreferenceSingleton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,8 @@
 		1017893B1B283EE1006C41B8 /* RNPreferenceManagerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNPreferenceManagerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FE295431E03BDA2009E7610 /* RNPreferenceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNPreferenceManager.h; sourceTree = "<group>"; };
 		7FE295441E03BDA2009E7610 /* RNPreferenceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNPreferenceManager.m; sourceTree = "<group>"; };
+		8F007318259C7A0E00F5A638 /* RNPreferenceSingleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNPreferenceSingleton.h; sourceTree = "<group>"; };
+		8F007319259C7A0E00F5A638 /* RNPreferenceSingleton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNPreferenceSingleton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +67,8 @@
 			children = (
 				7FE295431E03BDA2009E7610 /* RNPreferenceManager.h */,
 				7FE295441E03BDA2009E7610 /* RNPreferenceManager.m */,
+				8F007318259C7A0E00F5A638 /* RNPreferenceSingleton.h */,
+				8F007319259C7A0E00F5A638 /* RNPreferenceSingleton.m */,
 				101789311B283EE1006C41B8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 101789271B283EE1006C41B8;
@@ -165,6 +171,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F00731A259C7A0E00F5A638 /* RNPreferenceSingleton.m in Sources */,
 				7FE295451E03BDA2009E7610 /* RNPreferenceManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
