@@ -17,7 +17,7 @@ RCT_EXPORT_MODULE()
 }
 - (void)startObserving {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(perferenceChanged:) name:kSHMPreferenceChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleared) name:kSHMPreferenceClearNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleared:) name:kSHMPreferenceClearNotification object:nil];
 }
 - (void)stopObserving {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kSHMPreferenceChangedNotification object:nil];
@@ -26,16 +26,15 @@ RCT_EXPORT_MODULE()
 - (void)perferenceChanged:(NSNotification *)notification {
     [self sendEventWithName:kSHMPreferenceChangedEmitterTag body:notification.object];
 }
-- (void)cleared {
-    [self sendEventWithName:kSHMPreferenceClearEmitterTag body:nil];
+- (void)cleared:(NSNotification *)notification {
+    [self sendEventWithName:kSHMPreferenceClearEmitterTag body:notification.object];
 }
 
 
-RCT_EXPORT_METHOD(set:(NSString *)key
-                  value:(NSString *)value
+RCT_EXPORT_METHOD(set:(NSString *)jsonStr
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-    [[RNPreferenceSingleton shareInstance] setPreferenceValue:value forKey:key];
+    [[RNPreferenceSingleton shareInstance] setJSPreferenceChangedDataString:jsonStr];
     resolve([RNPreferenceSingleton getAllPreferences]);
 }
 

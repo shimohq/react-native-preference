@@ -4,7 +4,7 @@ const {RNPreferenceManager} = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNPreferenceManager);
 const listeners = new Set();
 
-eventEmitter.addListener('SHMPreferenceWhiteListChanged', (info) => {
+eventEmitter.addListener('SHMPreferenceWhiteListChanged', info => {
     for (const key in info) {
         set(key, info[key]);
     }
@@ -14,11 +14,22 @@ eventEmitter.addListener('SHMPreferenceWhiteListChanged', (info) => {
     }
 });
 
-eventEmitter.addListener('SHMPreferenceClear', () => {
-    if (Object.keys(PREFERENCES).length !== 0) {
-        clear();
-        for (let listener of listeners) {
-            listener();
+eventEmitter.addListener('SHMPreferenceClear', key => {
+    if (key) {
+        //clear key
+        if (PREFERENCES[key] !== null) {
+            clear(key);
+            for (let listener of listeners) {
+                listener();
+            }
+        }
+    } else {
+        //clear all
+        if (Object.keys(PREFERENCES).length !== 0) {
+            clear();
+            for (let listener of listeners) {
+                listener();
+            }
         }
     }
 });
@@ -53,19 +64,16 @@ function get(key) {
 
 function set(key, value) {
     let data = {};
-    let keyStr;
 
     if (typeof key === 'object') {
         data = {
             ...key,
         };
-        keyStr = JSON.stringify(key);
     } else {
         data[key] = value;
-        keyStr = key;
     }
 
-    Object.keys(data).forEach((name) => {
+    Object.keys(data).forEach(name => {
         const stringfied = JSON.stringify(data[name]);
         if (stringfied) {
             PREFERENCES[name] = JSON.parse(stringfied);
@@ -74,7 +82,8 @@ function set(key, value) {
         }
     });
 
-    return RNPreferenceManager.set(keyStr, value);
+    RNPreferenceManager.set(JSON.stringify(data));
+    return PREFERENCES;
 }
 
 function clear(key) {
@@ -87,7 +96,7 @@ function clear(key) {
             keys = [key];
         }
 
-        keys.map((name) => {
+        keys.map(name => {
             delete PREFERENCES[name];
         });
 

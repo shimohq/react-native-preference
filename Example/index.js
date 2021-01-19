@@ -7,7 +7,6 @@ import {
     TextInput,
     Button,
     ScrollView,
-    NativeEventEmitter,
 } from 'react-native';
 import Preference from 'react-native-preference';
 import {name as appName} from './app.json';
@@ -40,19 +39,17 @@ export default class Example extends Component {
 
     _set = () => {
         if (this._key) {
-            Preference.set(this._key, this._value || null).then(() => {
-                this.setState({
-                    preference: Preference.get(),
-                });
+            this.setState({
+                preference: Preference.set(this._key, this._value || null),
             });
         }
     };
 
-    _setKey = (key) => {
+    _setKey = key => {
         this._key = key;
     };
 
-    _setValue = (value) => {
+    _setValue = value => {
         this._value = value;
     };
 
