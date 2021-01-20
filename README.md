@@ -61,3 +61,15 @@ Preference.clear();
 // clear preference for key 'foo'
 Preference.clear('foo');
 ```
+
+
+## White List 
+```
+// set keys to white list, when preference value changed in white list changed, listener calls back.
+    Preference.setWhiteList(['a', 'b', 'c']);
+    Preference.addPrefernceChangedListener(() => {
+        this.setState({
+            preference: Preference.get(),
+        });
+    });
+```
