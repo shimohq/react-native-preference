@@ -14,9 +14,10 @@ eventEmitter.addListener('SHMPreferenceWhiteListChanged', info => {
     }
 });
 
-eventEmitter.addListener('SHMPreferenceClear', key => {
-    if (key) {
+eventEmitter.addListener('SHMPreferenceClear', info => {
+    if (info != null) {
         //clear key
+        const key = info[key];
         if (PREFERENCES[key] !== null) {
             clear(key);
             for (let listener of listeners) {

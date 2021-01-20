@@ -28,7 +28,7 @@ static RNPreferenceSingleton *_instance = nil;
     self = [super init];
     if (self) {
         NSDictionary *dic = RCTJSONParse([RNPreferenceSingleton getAllPreferences], nil);
-        self.singlePerference = dic ? [dic mutableCopy] : [@{} mutableCopy];
+        self.singlePreference = dic ? [dic mutableCopy] : [@{} mutableCopy];
     }
     return self;
 }
@@ -39,7 +39,7 @@ static RNPreferenceSingleton *_instance = nil;
 }
 
 - (NSString *)getPreferenceValueForKey:(NSString *)key {
-    return self.singlePerference[key];
+    return self.singlePreference[key];
 }
 
 - (void)setJSPreferenceChangedDataString:(NSString *)jsonStr {
@@ -51,21 +51,21 @@ static RNPreferenceSingleton *_instance = nil;
 }
 
 - (void)clear {
-    if (!self.singlePerference.allKeys.count) return;
+    if (!self.singlePreference.allKeys.count) return;
         
     [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceClearNotification object:nil];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSHMPreferenceKey];
-    self.singlePerference = [@{} mutableCopy];
+    self.singlePreference = [@{} mutableCopy];
 }
 
 - (void)clearValueForKey:(NSString *)key {
-    if (![self.singlePerference.allKeys containsObject:key]) return;
+    if (![self.singlePreference.allKeys containsObject:key]) return;
     
     if ([self.whiteList containsObject:key]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceClearNotification object:key];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kSHMPreferenceClearNotification object:@{@"key":key}];
     }
-    [self.singlePerference removeObjectForKey:key];
-    [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(self.singlePerference, nil) forKey:kSHMPreferenceKey];
+    [self.singlePreference removeObjectForKey:key];
+    [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(self.singlePreference, nil) forKey:kSHMPreferenceKey];
 }
 
 
@@ -77,13 +77,13 @@ static RNPreferenceSingleton *_instance = nil;
         return;
     }
 
-    NSMutableDictionary *dicNew = [self.singlePerference mutableCopy];
+    NSMutableDictionary *dicNew = [self.singlePreference mutableCopy];
     [dicNew setObject:value forKey:key];
     
     if (![RNPreferenceSingleton shareInstance].whiteList.count) NSLog(@"RNPreference - white list is nil !");
     
     // Diff
-    if (![value isEqual:self.singlePerference[key]]) {
+    if (![value isEqual:self.singlePreference[key]]) {
         if ([self.whiteList containsObject:key]) {
             // in white list
             NSDictionary *item = @{key:value};
@@ -93,7 +93,7 @@ static RNPreferenceSingleton *_instance = nil;
     }
     // set Singleton , set UD
     [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(dicNew, nil) forKey:kSHMPreferenceKey];
-    [self.singlePerference setObject:value forKey:key];
+    [self.singlePreference setObject:value forKey:key];
 }
 
 
