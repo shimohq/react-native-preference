@@ -55,9 +55,6 @@ public class SharedPreferencesDelegate {
     public String getPreferenceValueForKey(String key, String defaultValue) {
         String val = getPreferenceValueForKey(key);
         if (val == null) {
-            if (defaultValue != null) {
-                defaultValue = "";
-            }
             val = defaultValue;
         }
         return val;

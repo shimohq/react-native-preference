@@ -45,7 +45,6 @@ static RNPreferenceSingleton *_instance = nil;
 - (NSString *)getPreferenceValueForKey:(NSString *)key defaultValue:(NSString *)defaultValue {
     NSString *value = [self getPreferenceValueForKey:key];
     if (value == nil) {
-        defaultValue = defaultValue ?: @"";
         value = defaultValue;
     }
     return value;
