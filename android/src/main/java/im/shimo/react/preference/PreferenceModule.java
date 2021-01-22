@@ -49,9 +49,8 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getPreferenceForKey(String key, Promise promise) {
-        getDelegate().getPreferenceValueForKey(key);
-        promise.resolve(getDelegate().getAllPreferences());
+    public void getPreferenceForKey(String key, Promise promise) {        
+        promise.resolve(getDelegate().getPreferenceValueForKey(key,null));
     }
 
     @ReactMethod

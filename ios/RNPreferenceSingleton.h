@@ -25,6 +25,7 @@ extern NSString *const kSHMPreferenceClearNotification;
 // Get
 + (NSString *)getAllPreferences;
 - (NSString *)getPreferenceValueForKey:(NSString *)key;
+- (NSString *)getPreferenceValueForKey:(NSString *)key defaultValue:(NSString *)defaultValue;
 
 // Set
 ///JS set Preference Changed Data

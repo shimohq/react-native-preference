@@ -39,7 +39,16 @@ static RNPreferenceSingleton *_instance = nil;
 }
 
 - (NSString *)getPreferenceValueForKey:(NSString *)key {
-    return self.singlePreference[key];
+    return (NSString *)(self.singlePreference[key]);
+}
+
+- (NSString *)getPreferenceValueForKey:(NSString *)key defaultValue:(NSString *)defaultValue {
+    NSString *value = [self getPreferenceValueForKey:key];
+    if (value == nil) {
+        defaultValue = defaultValue ?: @"";
+        value = defaultValue;
+    }
+    return value;
 }
 
 - (void)setJSPreferenceChangedDataString:(NSString *)jsonStr {
