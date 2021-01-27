@@ -39,11 +39,13 @@ function addPrefernceChangedListener(callback) {
     const listener = () => {
         callback();
     };
-    listeners.add(listener);
-    return () => {
-        listeners.delete(listener);
-    };
+    listeners.add(listener);    
 }
+
+function removePrefernceChangedListener() {        
+    listeners.clear();
+}
+
 
 let PREFERENCES = {};
 
@@ -112,6 +114,7 @@ function setWhiteList(list) {
 
 export default {
     addPrefernceChangedListener,
+    removePrefernceChangedListener,
     setWhiteList,
     get,
     set,

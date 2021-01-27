@@ -25,6 +25,10 @@ export default class Example extends Component {
         });
     }
 
+    componentWillUnmount() {
+        Preference.removePrefernceChangedListener();
+    }
+
     _key = null;
     _value = null;
 
