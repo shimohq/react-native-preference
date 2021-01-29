@@ -14,6 +14,10 @@ NSString *const kSHMPreferenceKey = @"RNPreferenceKey";
 NSString *const kSHMPreferenceChangedNotification = @"SHMPreference_WhiteList_Notification";
 NSString *const kSHMPreferenceClearNotification = @"SHMPreference_Clear_Notification";
 
+@interface RNPreferenceSingleton()
+@property (strong, nonatomic) NSMutableDictionary *singlePreference;
+@end
+
 @implementation RNPreferenceSingleton
 static RNPreferenceSingleton *_instance = nil;
 + (instancetype)shareInstance {
