@@ -44,12 +44,6 @@ RCT_EXPORT_METHOD(clear:(RCTPromiseResolveBlock)resolve
     resolve([RNPreferenceSingleton getAllPreferences]);
 }
 
-RCT_EXPORT_METHOD(getPreferenceForKey:(NSString *)key
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject) {
-    resolve( [[RNPreferenceSingleton shareInstance] getPreferenceValueForKey:key] );
-}
-
 // 设置白名单, (需要接收状态发生改变的keys)
 RCT_EXPORT_METHOD(setWhiteList:(NSArray *)whiteList) {
     [RNPreferenceSingleton shareInstance].whiteList = whiteList;
