@@ -38,12 +38,12 @@ static RNPreferenceSingleton *_instance = nil;
     return preferences ? preferences : @"{}";
 }
 
-- (NSString *)getPreferenceValueForKey:(NSString *)key {
-    return (NSString *)(self.singlePreference[key]);
+- (id)getPreferenceValueForKey:(NSString *)key {
+    return self.singlePreference[key];
 }
 
-- (NSString *)getPreferenceValueForKey:(NSString *)key defaultValue:(NSString *)defaultValue {
-    NSString *value = [self getPreferenceValueForKey:key];
+- (id)getPreferenceValueForKey:(NSString *)key defaultValue:(id)defaultValue {
+    id value = [self getPreferenceValueForKey:key];
     if (value == nil) {
         value = defaultValue;
     }
@@ -103,6 +103,5 @@ static RNPreferenceSingleton *_instance = nil;
     [[NSUserDefaults standardUserDefaults] setObject:RCTJSONStringify(dicNew, nil) forKey:kSHMPreferenceKey];
     [self.singlePreference setObject:value forKey:key];
 }
-
 
 @end
