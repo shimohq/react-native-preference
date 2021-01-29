@@ -42,7 +42,7 @@ static RNPreferenceSingleton *_instance = nil;
     return self.singlePreference[key];
 }
 
-- (id)getPreferenceValueForKey:(NSString *)key defaultValue:(NSString *)defaultValue {
+- (id)getPreferenceValueForKey:(NSString *)key defaultValue:(id)defaultValue {
     id value = [self getPreferenceValueForKey:key];
     if (value == nil) {
         value = defaultValue;
