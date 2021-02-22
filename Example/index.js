@@ -33,18 +33,12 @@ export default class Example extends Component {
     _value = null;
 
     _clear = () => {
-        Preference.clear().then(() => {
-            this.setState({
-                preference: Preference.get(),
-            });
-        });
+        Preference.clear();
     };
 
     _set = () => {
         if (this._key) {
-            this.setState({
-                preference: Preference.set(this._key, this._value || null),
-            });
+            Preference.set(this._key, this._value || null);              
         }
     };
 

@@ -85,8 +85,7 @@ function set(key, value) {
         }
     });
 
-    RNPreferenceManager.set(JSON.stringify(data));
-    return PREFERENCES;
+    return RNPreferenceManager.set(JSON.stringify(PREFERENCES));    
 }
 
 function clear(key) {
