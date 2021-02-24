@@ -1,6 +1,6 @@
 import {NativeModules, NativeEventEmitter} from 'react-native';
 
-const {RNPreferenceManager} = NativeModules;
+const { RNPreferenceManager } = NativeModules;
 const eventEmitter = new NativeEventEmitter(RNPreferenceManager);
 const listeners = new Set();
 
@@ -10,7 +10,7 @@ eventEmitter.addListener('SHMPreferenceWhiteListChanged', info => {
     }
 
     for (let listener of listeners) {
-        listener();
+        listener(info);
     }
 });
 
@@ -35,15 +35,12 @@ eventEmitter.addListener('SHMPreferenceClear', info => {
     }
 });
 
-function addPrefernceChangedListener(callback) {
-    const listener = () => {
-        callback();
-    };
-    listeners.add(listener);    
+function addPreferenceChangedListener(listener) {
+    listeners.add(listener);
 }
 
-function removePrefernceChangedListener() {        
-    listeners.clear();
+function removePreferenceChangedListener(listener) {        
+    listeners.remove(listener);
 }
 
 
@@ -66,43 +63,30 @@ function get(key) {
 }
 
 function set(key, value) {
-    let data = {};
-
-    if (typeof key === 'object') {
-        data = {
-            ...key,
-        };
+    if (value === null || typeof value === 'undefined') {
+        return clear(key);
     } else {
-        data[key] = value;
-    }
-
-    Object.keys(data).forEach(name => {
-        const stringfied = JSON.stringify(data[name]);
-        if (stringfied) {
-            PREFERENCES[name] = JSON.parse(stringfied);
-        } else {
-            delete PREFERENCES[name];
+        try {
+            const data = {};
+            const safeValue = JSON.parse(JSON.stringify(value));
+            PREFERENCES[key] = safeValue;
+            data[key] = safeValue;
+            return RNPreferenceManager.set(JSON.stringify(data)); 
+        } catch (error) {
+            return Promise.reject(error);
         }
-    });
-
-    return RNPreferenceManager.set(JSON.stringify(PREFERENCES));    
+    }
 }
 
 function clear(key) {
-    if (key == null) {
+    if (value === null || typeof value === 'undefined') {
         PREFERENCES = {};
         return RNPreferenceManager.clear();
     } else {
-        let keys;
-        if (!Array.isArray(key)) {
-            keys = [key];
-        }
-
-        keys.map(name => {
-            delete PREFERENCES[name];
-        });
-
-        return RNPreferenceManager.set(JSON.stringify(PREFERENCES));
+        delete PREFERENCES[key];
+        return RNPreferenceManager.set(JSON.stringify({
+            [key]: null
+        }));
     }
 }
 
@@ -112,8 +96,8 @@ function setWhiteList(list) {
 }
 
 export default {
-    addPrefernceChangedListener,
-    removePrefernceChangedListener,
+    addPreferenceChangedListener,
+    removePreferenceChangedListener,
     setWhiteList,
     get,
     set,
