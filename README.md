@@ -7,8 +7,6 @@ Manage react-native app's preference data synchronously
 ```bash
 # install library from npm
 npm install react-native-preference --save
-# link native code
-react-native link react-native-preference
 ```
 
 # Usage
@@ -35,24 +33,18 @@ const preference = Preference.get('some-preference');
 
 ## Set
 
-`Preference.set(key: String|Object, value?: String): Promise`
+`Preference.set(key: string, value?: string): Promise<void>`
 
 ```
 
-// set one preference
+// set preference
 Preference.set('key', 'value');
-
-// set multiple preferences
-Preference.set({
-    key: 'value',
-    foo: 'bar'
-});
 
 ```
 
 ## Clear
 
-`Preference.clear(key?: String): Promise`
+`Preference.clear(key?: string): Promise<void>`
 
 ```
 // clear all preference data
@@ -67,9 +59,7 @@ Preference.clear('foo');
 ```
 // set keys to white list, when preference value changed in white list changed, listener calls back.
     Preference.setWhiteList(['a', 'b', 'c']);
-    Preference.addPrefernceChangedListener(() => {
-        this.setState({
-            preference: Preference.get(),
-        });
+    Preference.addPreferenceChangedListener((changed) => {
+        console.log('preference has changed: changed');
     });
 ```
