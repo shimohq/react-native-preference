@@ -79,7 +79,7 @@ function set(key, value) {
 }
 
 function clear(key) {
-    if (value === null || typeof value === 'undefined') {
+    if (key === null || typeof key === 'undefined') {
         PREFERENCES = {};
         return RNPreferenceManager.clear();
     } else {
