@@ -40,7 +40,7 @@ function addPreferenceChangedListener(listener) {
 }
 
 function removePreferenceChangedListener(listener) {        
-    listeners.remove(listener);
+    listeners.delete(listener);
 }
 
 
