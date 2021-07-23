@@ -83,10 +83,20 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(SharedPreferencesDelegate.kSHMPreferenceChangedNotification)) {
                     String msg = intent.getStringExtra("MSG");
-                    HashMap<String,String> msgMap = gson.fromJson(msg, HashMap.class);
+                    HashMap<String,Object> msgMap = gson.fromJson(msg, HashMap.class);
                     WritableMap map = Arguments.createMap();
-                    for (Map.Entry<String, String> entry : msgMap.entrySet()) {
-                        map.putString(entry.getKey(),entry.getValue());
+                    for (Map.Entry<String, Object> entry : msgMap.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
+                        if (value instanceof String) {
+                            map.putString(key, (String) value);
+                        } else if (value instanceof Boolean) {
+                            map.putBoolean(key, (Boolean) value);
+                        } else if (value instanceof Integer) {
+                            map.putInt(key, (Integer) value);
+                        } else if (value instanceof Double) {
+                            map.putDouble(key, (Double) value);
+                        }
                     }
 
                     sendEvent(
