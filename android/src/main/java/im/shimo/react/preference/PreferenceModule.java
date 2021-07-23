@@ -88,14 +88,21 @@ public class PreferenceModule extends ReactContextBaseJavaModule {
                     for (Map.Entry<String, Object> entry : msgMap.entrySet()) {
                         String key = entry.getKey();
                         Object value = entry.getValue();
-                        if (value instanceof String) {
-                            map.putString(key, (String) value);
-                        } else if (value instanceof Boolean) {
-                            map.putBoolean(key, (Boolean) value);
-                        } else if (value instanceof Integer) {
-                            map.putInt(key, (Integer) value);
-                        } else if (value instanceof Double) {
-                            map.putDouble(key, (Double) value);
+                        switch (value.getClass().getName()) {
+                            case "java.lang.Boolean":
+                                map.putBoolean(key, (Boolean) value);
+                                break;
+                            case "java.lang.Integer":
+                                map.putInt(key, (Integer) value);
+                                break;
+                            case "java.lang.Double":
+                                map.putDouble(key, (Double) value);
+                                break;
+                            case "java.lang.String":
+                                map.putString(key, (String) value);
+                                break;
+                            default:
+                                break;
                         }
                     }
 
