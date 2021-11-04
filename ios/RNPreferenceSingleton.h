@@ -23,7 +23,6 @@ extern NSString *const kSHMPreferenceClearNotification;
 @property (copy, nonatomic)             NSArray             *whiteList;
 
 // Get
-+ (NSString *)getAllPreferences;
 - (id)getPreferenceValueForKey:(NSString *)key;
 - (id)getPreferenceValueForKey:(NSString *)key defaultValue:(id)defaultValue;
 
